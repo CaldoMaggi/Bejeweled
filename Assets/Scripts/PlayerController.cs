@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     private GeneradorJoyas tileSeleccionado;
+    public DetectorMatch detector;
 
     void Update()
     {
@@ -18,19 +18,17 @@ public class PlayerController : MonoBehaviour
 
                 if (tileClickeado != null)
                 {
-                    // Primer click — seleccionar
                     if (tileSeleccionado == null)
                     {
                         tileSeleccionado = tileClickeado;
                         Debug.Log($"Seleccionado: {tileSeleccionado.name}");
                     }
-                    // Segundo click — intentar swap
                     else
                     {
                         int dx = Mathf.Abs(tileSeleccionado.columnas - tileClickeado.columnas);
                         int dy = Mathf.Abs(tileSeleccionado.filas - tileClickeado.filas);
 
-                        // Solo permite vecinos directos (arriba, abajo, izquierda, derecha)
+                        // Solo vecinos directos, nada diagonal
                         if (dx + dy == 1)
                         {
                             SwapJoyas(tileSeleccionado, tileClickeado);
@@ -45,22 +43,24 @@ public class PlayerController : MonoBehaviour
 
     private void SwapJoyas(GeneradorJoyas a, GeneradorJoyas b)
     {
-        // Intercambiar posiciones
+        EjecutarSwap(a, b);
+        detector.ChequearDespuesDeSwap(a, b, () => EjecutarSwap(a, b));
+    }
+
+    // Separamos el swap en su propia función para reutilizarla al revertir
+    public void EjecutarSwap(GeneradorJoyas a, GeneradorJoyas b)
+    {
         Vector3 posA = a.joyaActual.transform.position;
         Vector3 posB = b.joyaActual.transform.position;
 
         a.joyaActual.transform.position = posB;
         b.joyaActual.transform.position = posA;
 
-        // Intercambiar parents
         a.joyaActual.transform.SetParent(b.transform);
         b.joyaActual.transform.SetParent(a.transform);
 
-        // Intercambiar referencias
         GameObject temp = a.joyaActual;
         a.joyaActual = b.joyaActual;
         b.joyaActual = temp;
-
-        Debug.Log($"Swap: {a.name} <-> {b.name}");
     }
 }

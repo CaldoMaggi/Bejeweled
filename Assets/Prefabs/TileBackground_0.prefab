@@ -107,3 +107,10 @@ MonoBehaviour:
   - {fileID: 1975976087200044795, guid: ba6bcc10d109d9d4ca35f7a43b980b0b, type: 3}
   - {fileID: 420092387161985294, guid: 50f2fb3023afea6499f5eef422504201, type: 3}
   - {fileID: 6581891694636616664, guid: dcbb21b502259944286430c3adc57aad, type: 3}
+  tipo: 0
+  Bomba4: 0
+  Cubo5: 0
+  filas: 0
+  columnas: 0
+  joyaActual: {fileID: 0}
+  tablero: {fileID: 0}

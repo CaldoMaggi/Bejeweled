@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Tablero : MonoBehaviour
 {
-    [SerializeField] private int ancho = 8;
-    [SerializeField] private int largo = 8;
+    public int ancho = 8;
+    public int largo = 8;
     public GameObject PrefabTile;
-    private GeneradorJoyas[,] allTiles;
+    public GeneradorJoyas[,] allTiles;
 
     void Start()
     {
@@ -29,6 +29,7 @@ public class Tablero : MonoBehaviour
                 GeneradorJoyas tile = backgroundTile.GetComponent<GeneradorJoyas>(); // ← mismo cambio
                 tile.columnas = i; // ← ya tienes columnas en tu script
                 tile.filas = j;    // ← ya tienes filas en tu script
+                tile.tablero = this; // ← asigna el tablero al tile
                 allTiles[i, j] = tile;
             }
         }
