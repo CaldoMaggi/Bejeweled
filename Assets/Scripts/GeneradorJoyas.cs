@@ -67,15 +67,26 @@ public class GeneradorJoyas : MonoBehaviour
 
     public TipoJoya GetTipo()
     {
-        if (esBomba)
-            return joyaActual.GetComponent<Bomba>().tipo;
+        if (joyaActual == null) return default;
 
-        return joyaActual.GetComponent<Joya>().tipo;
+        if (esBomba)
+        {
+            Bomba b = joyaActual.GetComponent<Bomba>();
+            if (b != null) return b.tipo;
+        }
+
+        Joya j = joyaActual.GetComponent<Joya>();
+        if (j != null) return j.tipo;
+
+        return default;
     }
 
     public GameObject GetPrefabBomba()
     {
-        return joyaActual.GetComponent<Joya>().prefabBomba;
+        if (joyaActual == null) return null;
+        Joya j = joyaActual.GetComponent<Joya>();
+        if (j != null) return j.prefabBomba;
+        return null;
     }
 
     private List<GameObject> Shuffle(List<GameObject> lista)
