@@ -138,3 +138,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tipo: 2
+  prefabBomba: {fileID: 8711166520679223458, guid: 63751e9276fca0e4c9a4cfefdf72989c, type: 3}

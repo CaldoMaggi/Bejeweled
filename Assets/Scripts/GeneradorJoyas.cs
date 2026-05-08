@@ -6,9 +6,13 @@ public enum TipoJoya { Roja, Azul, Verde, Amarilla, Morada, Naranja }
 public class GeneradorJoyas : MonoBehaviour
 {
     public GameObject[] joyas;
-    public TipoJoya tipo;
-    public bool Bomba4 = false;
-    public bool Cubo5 = false;
+    private TipoJoya tipo;
+
+    public GameObject bomba;
+    public GameObject superGema;
+    public bool esBomba = false;
+    public bool esSupergema = false;
+
     public int filas;
     public int columnas;
     public GameObject joyaActual;
@@ -63,7 +67,15 @@ public class GeneradorJoyas : MonoBehaviour
 
     public TipoJoya GetTipo()
     {
+        if (esBomba)
+            return joyaActual.GetComponent<Bomba>().tipo;
+
         return joyaActual.GetComponent<Joya>().tipo;
+    }
+
+    public GameObject GetPrefabBomba()
+    {
+        return joyaActual.GetComponent<Joya>().prefabBomba;
     }
 
     private List<GameObject> Shuffle(List<GameObject> lista)

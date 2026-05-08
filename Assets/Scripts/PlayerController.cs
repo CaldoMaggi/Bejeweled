@@ -62,5 +62,13 @@ public class PlayerController : MonoBehaviour
         GameObject temp = a.joyaActual;
         a.joyaActual = b.joyaActual;
         b.joyaActual = temp;
+
+        // ← Esto es lo nuevo
+        bool tempBomba = a.esBomba;
+        bool tempSuper = a.esSupergema;
+        a.esBomba = b.esBomba;
+        a.esSupergema = b.esSupergema;
+        b.esBomba = tempBomba;
+        b.esSupergema = tempSuper;
     }
 }
