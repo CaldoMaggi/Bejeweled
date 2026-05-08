@@ -13,18 +13,16 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        seleccionVisual = Instantiate(prefabSeleccion);
-        seleccionVisual.SetActive(false);
-
         seleccionOrigen = Instantiate(prefabSeleccion);
-        seleccionObjetivo = Instantiate(prefabSeleccion);
-
         seleccionOrigen.SetActive(false);
+        seleccionObjetivo = Instantiate(prefabSeleccion);
         seleccionObjetivo.SetActive(false);
     }
 
     void Update()
     {
+        if (MenuPausa.Pausado) return;
+
         if (Input.GetMouseButtonDown(0))
         {
             Vector2 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -62,14 +60,11 @@ public class PlayerController : MonoBehaviour
 
             if (dx + dy == 1)
             {
-                // Es un vecino válido: mostramos el segundo cuadro un instante
                 seleccionObjetivo.transform.position = tileClickeado.transform.position;
                 seleccionObjetivo.SetActive(true);
 
-                // Ejecutamos el swap
                 SwapJoyas(tileSeleccionado, tileClickeado);
 
-                // Limpiamos después de un breve momento o inmediatamente
                 Invoke("DesactivarVisuales", 0.2f);
             }
             else
@@ -97,7 +92,6 @@ public class PlayerController : MonoBehaviour
 
     public void EjecutarSwap(GeneradorJoyas a, GeneradorJoyas b)
     {
-        // ... (Tu lógica de EjecutarSwap se mantiene igual)
         Vector3 posA = a.joyaActual.transform.position;
         Vector3 posB = b.joyaActual.transform.position;
 
@@ -111,7 +105,6 @@ public class PlayerController : MonoBehaviour
         a.joyaActual = b.joyaActual;
         b.joyaActual = temp;
 
-        // Intercambio de estados (Bomba/Supergema)
         bool tempBomba = a.esBomba;
         bool tempSuper = a.esSupergema;
         a.esBomba = b.esBomba;
