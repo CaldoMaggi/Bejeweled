@@ -6,7 +6,6 @@ public enum TipoJoya { Roja, Azul, Verde, Amarilla, Morada, Naranja }
 public class GeneradorJoyas : MonoBehaviour
 {
     public GameObject[] joyas;
-    private TipoJoya tipo;
 
     public GameObject bomba;
     public GameObject superGema;
@@ -16,7 +15,7 @@ public class GeneradorJoyas : MonoBehaviour
     public int filas;
     public int columnas;
     public GameObject joyaActual;
-    public Tablero tablero; // ← nuevo
+    public Tablero tablero; 
 
     private void Start()
     {
@@ -25,7 +24,6 @@ public class GeneradorJoyas : MonoBehaviour
 
     public void SpawnJoya()
     {
-        // Si no hay tablero aún, spawnear normal
         if (tablero == null)
         {
             SpawnNormal(joyas[Random.Range(0, joyas.Length)]);
@@ -54,7 +52,6 @@ public class GeneradorJoyas : MonoBehaviour
             }
         }
 
-        // Si todas forman match spawnear cualquiera
         SpawnNormal(joyas[0]);
     }
 

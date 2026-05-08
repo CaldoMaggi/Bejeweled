@@ -26,10 +26,10 @@ public class Tablero : MonoBehaviour
                 backgroundTile.transform.parent = this.transform;
                 backgroundTile.name = "(" + i + "," + j + ")";
 
-                GeneradorJoyas tile = backgroundTile.GetComponent<GeneradorJoyas>(); // ← mismo cambio
-                tile.columnas = i; // ← ya tienes columnas en tu script
-                tile.filas = j;    // ← ya tienes filas en tu script
-                tile.tablero = this; // ← asigna el tablero al tile
+                GeneradorJoyas tile = backgroundTile.GetComponent<GeneradorJoyas>();
+                tile.columnas = i;
+                tile.filas = j;
+                tile.tablero = this;
                 allTiles[i, j] = tile;
             }
         }

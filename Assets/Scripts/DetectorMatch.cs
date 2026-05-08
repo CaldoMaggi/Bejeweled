@@ -16,13 +16,11 @@ public class DetectorMatch : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
 
-        // --- Caso 1: Supergema + cualquier gema → explotar todo ese color ---
         if (a.esSupergema || b.esSupergema)
         {
             GeneradorJoyas supergema = a.esSupergema ? a : b;
             GeneradorJoyas otra = a.esSupergema ? b : a;
 
-            // La otra puede ser Joya normal o Bomba, usamos helper
             TipoJoya tipoObjetivo = ObtenerTipo(otra);
             ExplotarColor(tipoObjetivo);
             DestruirJoya(supergema);
@@ -31,7 +29,6 @@ public class DetectorMatch : MonoBehaviour
             yield break;
         }
 
-        // --- Caso 2: Match normal (bombas incluidas como gemas con tipo) ---
         List<GeneradorJoyas> matchA = GetMatch(a);
         List<GeneradorJoyas> matchB = GetMatch(b);
 
@@ -41,11 +38,8 @@ public class DetectorMatch : MonoBehaviour
             yield break;
         }
 
-        // Unión de todos los tiles que hacen match
         HashSet<GeneradorJoyas> todos = new HashSet<GeneradorJoyas>(matchA);
         todos.UnionWith(matchB);
-
-        // Centro = tile del match más largo (el que "ganó" el swap)
         List<GeneradorJoyas> matchPrincipal = matchA.Count >= matchB.Count ? matchA : matchB;
         GeneradorJoyas centro = matchA.Count >= matchB.Count ? a : b;
         int largo = matchPrincipal.Count;
@@ -69,9 +63,6 @@ public class DetectorMatch : MonoBehaviour
 
         yield return StartCoroutine(ProcesoPostDestruccion());
     }
-
-    // ─── Post-destrucción común ───────────────────────────────────────────────
-
     private IEnumerator ProcesoPostDestruccion()
     {
         yield return new WaitForSeconds(0.3f);
@@ -88,8 +79,10 @@ public class DetectorMatch : MonoBehaviour
         {
             huboCambios = false;
             HashSet<GeneradorJoyas> todosLosMatches = new HashSet<GeneradorJoyas>();
+            Dictionary<GeneradorJoyas, List<GeneradorJoyas>> matchPorTile = new Dictionary<GeneradorJoyas, List<GeneradorJoyas>>();
 
             for (int i = 0; i < tablero.ancho; i++)
+            {
                 for (int j = 0; j < tablero.largo; j++)
                 {
                     GeneradorJoyas tile = tablero.allTiles[i, j];
@@ -99,13 +92,40 @@ public class DetectorMatch : MonoBehaviour
                     if (match.Count >= 3)
                     {
                         todosLosMatches.UnionWith(match);
+                        matchPorTile[tile] = match;
                         huboCambios = true;
                     }
                 }
+            }
 
             if (!huboCambios) break;
 
-            foreach (var tile in todosLosMatches) DestruirJoya(tile);
+            GeneradorJoyas centroBomba = null;
+            GeneradorJoyas centroSuper = null;
+            int maxMatch = 0;
+
+            foreach (var par in matchPorTile)
+            {
+                if (par.Value.Count > maxMatch)
+                {
+                    maxMatch = par.Value.Count;
+                    if (par.Value.Count >= 5)
+                        centroSuper = par.Key;
+                    else if (par.Value.Count == 4)
+                        centroBomba = par.Key;
+                }
+            }
+
+            foreach (var tile in todosLosMatches)
+            {
+                if (tile != centroBomba && tile != centroSuper)
+                    DestruirJoya(tile);
+            }
+
+            if (centroSuper != null)
+                ConvertirEnSupergema(centroSuper);
+            else if (centroBomba != null)
+                ConvertirEnBomba(centroBomba);
 
             yield return new WaitForSeconds(0.3f);
             RellenarTablero();
@@ -113,30 +133,22 @@ public class DetectorMatch : MonoBehaviour
         }
     }
 
-    // ─── Destrucción ─────────────────────────────────────────────────────────
-
     public void DestruirJoya(GeneradorJoyas tile)
     {
         if (tile == null || tile.joyaActual == null) return;
 
         bool eraBomba = tile.esBomba;
 
-        // Limpiar flags ANTES de recursión
         tile.esBomba = false;
         tile.esSupergema = false;
 
         Destroy(tile.joyaActual);
         tile.joyaActual = null;
 
-        // Explotar DESPUÉS de destruir para evitar loop infinito
         if (eraBomba) ExplotarArea(tile);
     }
-
-    // ─── Explosiones ─────────────────────────────────────────────────────────
-
     private void ExplotarArea(GeneradorJoyas centro)
     {
-        // Guardamos columna y fila ANTES de cualquier destrucción
         int col = centro.columnas;
         int fil = centro.filas;
 
@@ -151,7 +163,6 @@ public class DetectorMatch : MonoBehaviour
                 if (vecino.joyaActual != null) aDestruir.Add(vecino);
             }
 
-        // Destruir todos de una vez para evitar problemas de recursión
         foreach (var tile in aDestruir) DestruirJoya(tile);
     }
 
@@ -162,13 +173,10 @@ public class DetectorMatch : MonoBehaviour
             {
                 GeneradorJoyas tile = tablero.allTiles[i, j];
                 if (tile.joyaActual == null || tile.esSupergema) continue;
-                // FIX: usamos helper que lee tanto Joya como Bomba
+
                 if (ObtenerTipo(tile) == tipo) DestruirJoya(tile);
             }
     }
-
-    // ─── Match detection ─────────────────────────────────────────────────────
-
     private List<GeneradorJoyas> GetMatch(GeneradorJoyas tile)
     {
         if (tile.joyaActual == null || tile.esSupergema)
@@ -204,7 +212,6 @@ public class DetectorMatch : MonoBehaviour
             if (vecino.joyaActual == null || vecino.esSupergema) break;
             if (ObtenerTipo(vecino) != tipo) break;
 
-            // Incluir tanto joyas normales como bombas del mismo color
             lista.Add(vecino);
             c += dc;
             f += df;
@@ -224,12 +231,10 @@ public class DetectorMatch : MonoBehaviour
             GeneradorJoyas vecino = tablero.allTiles[c, f];
             if (vecino.joyaActual == null || vecino.esSupergema) break;
 
-            // ← Bomba del mismo color cuenta como parte del match
             if (ObtenerTipo(vecino) != tipo) break;
 
             lista.Add(vecino);
 
-            // ← Si el vecino es bomba, no seguimos buscando más allá
             if (vecino.esBomba) break;
 
             c += dc;
@@ -237,10 +242,6 @@ public class DetectorMatch : MonoBehaviour
         }
         return lista;
     }
-
-
-    // ─── Conversiones ────────────────────────────────────────────────────────
-
     private void ConvertirEnBomba(GeneradorJoyas tile)
     {
         TipoJoya tipoAnterior = ObtenerTipo(tile);
@@ -271,12 +272,6 @@ public class DetectorMatch : MonoBehaviour
         tile.joyaActual = superObj;
         tile.esSupergema = true;
     }
-
-    // ─── Utilidades ──────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Lee el TipoJoya de un tile sin importar si es Joya normal o Bomba.
-    /// </summary>
     private TipoJoya ObtenerTipo(GeneradorJoyas tile)
     {
         if (tile.joyaActual == null) return default;
@@ -289,9 +284,6 @@ public class DetectorMatch : MonoBehaviour
 
         return default;
     }
-
-    // ─── Relleno ─────────────────────────────────────────────────────────────
-
     private void RellenarTablero()
     {
         for (int i = 0; i < tablero.ancho; i++)

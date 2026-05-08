@@ -286,6 +286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detector: {fileID: 87977389}
+  prefabSeleccion: {fileID: 3057662941267885128, guid: d04b9fb40105c734c8a9a0ee87196b96, type: 3}
 --- !u!4 &87977388
 Transform:
   m_ObjectHideFlags: 0
