@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class DetectorMatch : MonoBehaviour
 {
@@ -20,11 +19,9 @@ public class DetectorMatch : MonoBehaviour
         {
             GeneradorJoyas supergema = a.esSupergema ? a : b;
             GeneradorJoyas otra = a.esSupergema ? b : a;
-
-            TipoJoya tipoObjetivo = ObtenerTipo(otra);
-            ExplotarColor(tipoObjetivo);
+            ExplotarColor(ObtenerTipo(otra));
             DestruirJoya(supergema);
-
+            GestorPuntaje.Instancia.AgregarPuntos(5);
             yield return StartCoroutine(ProcesoPostDestruccion());
             yield break;
         }
@@ -44,25 +41,29 @@ public class DetectorMatch : MonoBehaviour
         GeneradorJoyas centro = matchA.Count >= matchB.Count ? a : b;
         int largo = matchPrincipal.Count;
 
-        if (largo >= 5) // se crea la superjoya
+        if (largo >= 5)
         {
             foreach (var tile in todos)
                 if (tile != centro) DestruirJoya(tile);
             ConvertirEnSupergema(centro);
+            GestorPuntaje.Instancia.AgregarPuntos(30);
         }
-        else if (largo == 4) //se crea la bomba
+        else if (largo == 4)
         {
             foreach (var tile in todos)
                 if (tile != centro) DestruirJoya(tile);
             ConvertirEnBomba(centro);
+            GestorPuntaje.Instancia.AgregarPuntos(20);
         }
-        else // match de 3
+        else
         {
             foreach (var tile in todos) DestruirJoya(tile);
+            GestorPuntaje.Instancia.AgregarPuntos(10);
         }
 
         yield return StartCoroutine(ProcesoPostDestruccion());
     }
+
     private IEnumerator ProcesoPostDestruccion()
     {
         yield return new WaitForSeconds(0.3f);
@@ -123,10 +124,19 @@ public class DetectorMatch : MonoBehaviour
             }
 
             if (centroSuper != null)
+            {
                 ConvertirEnSupergema(centroSuper);
+                GestorPuntaje.Instancia.AgregarPuntos(5);
+            }
             else if (centroBomba != null)
+            {
                 ConvertirEnBomba(centroBomba);
-
+                GestorPuntaje.Instancia.AgregarPuntos(4);
+            }
+            else
+            {
+                GestorPuntaje.Instancia.AgregarPuntos(3);
+            }
             yield return new WaitForSeconds(0.3f);
             RellenarTablero();
             yield return new WaitForSeconds(0.4f);
@@ -138,7 +148,6 @@ public class DetectorMatch : MonoBehaviour
         if (tile == null || tile.joyaActual == null) return;
 
         bool eraBomba = tile.esBomba;
-
         tile.esBomba = false;
         tile.esSupergema = false;
 
@@ -147,6 +156,7 @@ public class DetectorMatch : MonoBehaviour
 
         if (eraBomba) ExplotarArea(tile);
     }
+
     private void ExplotarArea(GeneradorJoyas centro)
     {
         int col = centro.columnas;
@@ -159,8 +169,8 @@ public class DetectorMatch : MonoBehaviour
             {
                 if (i < 0 || i >= tablero.ancho || j < 0 || j >= tablero.largo) continue;
                 GeneradorJoyas vecino = tablero.allTiles[i, j];
-                if (vecino == centro) continue;
-                if (vecino.joyaActual != null) aDestruir.Add(vecino);
+                if (vecino == centro || vecino.joyaActual == null) continue;
+                aDestruir.Add(vecino);
             }
 
         foreach (var tile in aDestruir) DestruirJoya(tile);
@@ -173,10 +183,10 @@ public class DetectorMatch : MonoBehaviour
             {
                 GeneradorJoyas tile = tablero.allTiles[i, j];
                 if (tile.joyaActual == null || tile.esSupergema) continue;
-
                 if (ObtenerTipo(tile) == tipo) DestruirJoya(tile);
             }
     }
+
     private List<GeneradorJoyas> GetMatch(GeneradorJoyas tile)
     {
         if (tile.joyaActual == null || tile.esSupergema)
@@ -219,29 +229,6 @@ public class DetectorMatch : MonoBehaviour
         return lista;
     }
 
-    private List<GeneradorJoyas> Buscar(GeneradorJoyas origen, int dc, int df, TipoJoya tipo)
-    {
-        List<GeneradorJoyas> lista = new List<GeneradorJoyas>();
-        int c = origen.columnas + dc;
-        int f = origen.filas + df;
-
-        while (true)
-        {
-            if (c < 0 || c >= tablero.ancho || f < 0 || f >= tablero.largo) break;
-            GeneradorJoyas vecino = tablero.allTiles[c, f];
-            if (vecino.joyaActual == null || vecino.esSupergema) break;
-
-            if (ObtenerTipo(vecino) != tipo) break;
-
-            lista.Add(vecino);
-
-            if (vecino.esBomba) break;
-
-            c += dc;
-            f += df;
-        }
-        return lista;
-    }
     private void ConvertirEnBomba(GeneradorJoyas tile)
     {
         TipoJoya tipoAnterior = ObtenerTipo(tile);
@@ -261,7 +248,7 @@ public class DetectorMatch : MonoBehaviour
 
     private void ConvertirEnSupergema(GeneradorJoyas tile)
     {
-        if (tile.superGema == null) { Debug.LogWarning("Falta superGema prefab en " + tile.name); return; }
+        if (tile.superGema == null) { Debug.LogWarning("Falta superGema en " + tile.name); return; }
 
         Destroy(tile.joyaActual);
         tile.joyaActual = null;
@@ -272,6 +259,7 @@ public class DetectorMatch : MonoBehaviour
         tile.joyaActual = superObj;
         tile.esSupergema = true;
     }
+
     private TipoJoya ObtenerTipo(GeneradorJoyas tile)
     {
         if (tile.joyaActual == null) return default;
@@ -284,6 +272,7 @@ public class DetectorMatch : MonoBehaviour
 
         return default;
     }
+
     private void RellenarTablero()
     {
         for (int i = 0; i < tablero.ancho; i++)
