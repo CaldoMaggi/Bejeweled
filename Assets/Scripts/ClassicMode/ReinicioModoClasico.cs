@@ -3,12 +3,13 @@ using System.Collections.Generic;
 
 public class ReinicioModoClasico : MonoBehaviour
 {
-    public static ReinicioModoClasico Instancia;
+    public static ReinicioModoClasico Instancia; //singleton para acceder desde otros scripts
     public Tablero tablero;
 
-    private void Awake()
+    void Awake()
     {
-        Instancia = this;
+        if (Instancia == null) Instancia = this;
+        else Destroy(gameObject);
     }
 
     public void ReiniciarTablero()

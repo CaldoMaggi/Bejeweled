@@ -148,8 +148,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf2c17a3d4f4ac4e971c8e93423509a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  puntosMatch3Manual: 10
+  puntosMatch3Cascada: 20
+  puntosMatch4: 30
+  puntosBomba: 35
+  puntosSuperjoyaPorGema: 15
   textoPuntaje: {fileID: 325136034}
   barraProgreso: {fileID: 1491857613}
+  prefabTextoFlotante: {fileID: 3457007628403102834, guid: 54ffe5a80d312c448a91b88864563cbd, type: 3}
 --- !u!4 &3594149
 Transform:
   m_ObjectHideFlags: 0
@@ -482,7 +488,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.312, y: 0.73247427}
   m_AnchorMax: {x: 0.312, y: 0.73247427}
-  m_AnchoredPosition: {x: 12, y: 0}
+  m_AnchoredPosition: {x: -62, y: 6}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &325136034
@@ -539,8 +545,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -618,8 +624,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 226.8, y: -249.77}
-  m_SizeDelta: {x: 450.155, y: 46.2219}
+  m_AnchoredPosition: {x: 177.2641, y: -197.4172}
+  m_SizeDelta: {x: 367.8612, y: 36.0224}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &412045548
 MonoBehaviour:
@@ -1813,8 +1819,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 226.79742, y: -249.76564}
-  m_SizeDelta: {x: 425.8802, y: 25.9365}
+  m_AnchoredPosition: {x: 177.28302, y: -196.42206}
+  m_SizeDelta: {x: 342.9059, y: 17.9059}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1491857613
 MonoBehaviour:

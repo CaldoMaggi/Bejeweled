@@ -5,9 +5,11 @@ using UnityEngine;
 public class DetectorMatch : MonoBehaviour
 {
     public Tablero tablero;
+    private bool esMovimientoManual = false;
 
     public void ChequearDespuesDeSwap(GeneradorJoyas a, GeneradorJoyas b, System.Action revertir)
     {
+        esMovimientoManual = true; // ← el jugador hizo el movimiento, sino fue el tablero
         StartCoroutine(ChequearYResolver(a, b, revertir));
     }
 
@@ -19,9 +21,29 @@ public class DetectorMatch : MonoBehaviour
         {
             GeneradorJoyas supergema = a.esSupergema ? a : b;
             GeneradorJoyas otra = a.esSupergema ? b : a;
-            ExplotarColor(ObtenerTipo(otra));
+            TipoJoya tipoObjetivo = ObtenerTipo(otra);
+
+            // Contar y mostrar texto en cada gema antes de explotar
+            for (int i = 0; i < tablero.ancho; i++)
+                for (int j = 0; j < tablero.largo; j++)
+                {
+                    GeneradorJoyas tile = tablero.allTiles[i, j];
+                    if (tile.joyaActual == null || tile.esSupergema) continue;
+                    if (ObtenerTipo(tile) == tipoObjetivo)
+                    {
+                        GestorPuntaje.Instancia.MostrarTextoFlotante(
+                            GestorPuntaje.Instancia.puntosSuperjoyaPorGema,
+                            tile.transform.position
+                        );
+                    }
+                }
+
+            int gemasExplotadas = ContarGemasDeColor(tipoObjetivo);
+            ExplotarColor(tipoObjetivo);
             DestruirJoya(supergema);
-            GestorPuntaje.Instancia.AgregarPuntos(5);
+            GestorPuntaje.Instancia.AgregarPuntos(
+                gemasExplotadas * GestorPuntaje.Instancia.puntosSuperjoyaPorGema
+            );
             yield return StartCoroutine(ProcesoPostDestruccion());
             yield break;
         }
@@ -46,20 +68,34 @@ public class DetectorMatch : MonoBehaviour
             foreach (var tile in todos)
                 if (tile != centro) DestruirJoya(tile);
             ConvertirEnSupergema(centro);
-            GestorPuntaje.Instancia.AgregarPuntos(30);
+            GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosMatch4);
+            GestorPuntaje.Instancia.MostrarTextoFlotante(      // ←
+                GestorPuntaje.Instancia.puntosMatch4,
+                centro.transform.position
+            );
         }
         else if (largo == 4)
         {
             foreach (var tile in todos)
                 if (tile != centro) DestruirJoya(tile);
             ConvertirEnBomba(centro);
-            GestorPuntaje.Instancia.AgregarPuntos(20);
+            GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosMatch4);
+            GestorPuntaje.Instancia.MostrarTextoFlotante(      // ←
+                GestorPuntaje.Instancia.puntosMatch4,
+                centro.transform.position
+            );
         }
         else
         {
             foreach (var tile in todos) DestruirJoya(tile);
-            GestorPuntaje.Instancia.AgregarPuntos(10);
+            int pts = esMovimientoManual
+                ? GestorPuntaje.Instancia.puntosMatch3Manual
+                : GestorPuntaje.Instancia.puntosMatch3Cascada;
+            GestorPuntaje.Instancia.AgregarPuntos(pts);
+            GestorPuntaje.Instancia.MostrarTextoFlotante(pts, CentroDelMatch(todos)); // ←
         }
+
+        esMovimientoManual = false;
 
         yield return StartCoroutine(ProcesoPostDestruccion());
     }
@@ -126,21 +162,54 @@ public class DetectorMatch : MonoBehaviour
             if (centroSuper != null)
             {
                 ConvertirEnSupergema(centroSuper);
-                GestorPuntaje.Instancia.AgregarPuntos(5);
+                GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosMatch4);
+                GestorPuntaje.Instancia.MostrarTextoFlotante(
+                    GestorPuntaje.Instancia.puntosMatch4,
+                    centroSuper.transform.position
+                );
             }
             else if (centroBomba != null)
             {
                 ConvertirEnBomba(centroBomba);
-                GestorPuntaje.Instancia.AgregarPuntos(4);
+                GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosMatch4);
+                GestorPuntaje.Instancia.MostrarTextoFlotante(
+                    GestorPuntaje.Instancia.puntosMatch4,
+                    centroBomba.transform.position
+                );
             }
             else
             {
-                GestorPuntaje.Instancia.AgregarPuntos(3);
+                GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosMatch3Cascada);
+                GestorPuntaje.Instancia.MostrarTextoFlotante(
+                    GestorPuntaje.Instancia.puntosMatch3Cascada,
+                    CentroDelMatch(todosLosMatches) // ← centro del match
+                );
             }
             yield return new WaitForSeconds(0.3f);
             RellenarTablero();
             yield return new WaitForSeconds(0.4f);
         }
+    }
+
+    private Vector3 CentroDelMatch(HashSet<GeneradorJoyas> match)
+    {
+        Vector3 suma = Vector3.zero;
+        foreach (var tile in match)
+            suma += tile.transform.position;
+        return suma / match.Count;
+    }
+
+    private int ContarGemasDeColor(TipoJoya tipo)
+    {
+        int count = 0;
+        for (int i = 0; i < tablero.ancho; i++)
+            for (int j = 0; j < tablero.largo; j++)
+            {
+                GeneradorJoyas tile = tablero.allTiles[i, j];
+                if (tile.joyaActual == null || tile.esSupergema) continue;
+                if (ObtenerTipo(tile) == tipo) count++;
+            }
+        return count;
     }
 
     public void DestruirJoya(GeneradorJoyas tile)
@@ -154,7 +223,11 @@ public class DetectorMatch : MonoBehaviour
         Destroy(tile.joyaActual);
         tile.joyaActual = null;
 
-        if (eraBomba) ExplotarArea(tile);
+        if (eraBomba)
+        {
+            GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosBomba);
+            ExplotarArea(tile);
+        }
     }
 
     private void ExplotarArea(GeneradorJoyas centro)
