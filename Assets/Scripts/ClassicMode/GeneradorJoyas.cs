@@ -6,16 +6,20 @@ public enum TipoJoya { Roja, Azul, Verde, Amarilla, Morada, Naranja }
 public class GeneradorJoyas : MonoBehaviour
 {
     public GameObject[] joyas;
-
-    public GameObject bomba;
     public GameObject superGema;
-    public bool esBomba = false;
-    public bool esSupergema = false;
+    private bool esBomba = false;
+    private bool esSupergema = false;
 
-    public int filas;
-    public int columnas;
-    public GameObject joyaActual;
-    public Tablero tablero; 
+    private int filas;
+    private int columnas;
+    public GameObject joyaActual; //Referencia a la joya que se ha generado en esta casilla
+    private Tablero tablero;
+
+    public int Filas { get => filas; set => filas = value; }
+    public int Columnas { get => columnas; set => columnas = value; }
+    public bool EsBomba { get => esBomba; set => esBomba = value; }
+    public bool EsSupergema { get => esSupergema; set => esSupergema = value; }
+    public Tablero Tablero { get => tablero; set => tablero = value; }
 
     private void Start()
     {
@@ -24,6 +28,18 @@ public class GeneradorJoyas : MonoBehaviour
 
     public void SpawnJoya()
     {
+        // ─── Joya de tiempo (solo en modo contrarreloj) ───────────────
+        if (GestorContrarreloj.Instancia != null && GestorContrarreloj.Instancia.DebeSpawnearJoyaTiempo())
+        {
+            GameObject prefabTiempo = GestorContrarreloj.Instancia.ObtenerPrefabTiempoAleatorio();
+            if (prefabTiempo != null)
+            {
+                SpawnNormal(prefabTiempo);
+                return;
+            }
+        }
+
+        // ─── Lógica normal (clasico y contrarreloj sin bonus) ─────────
         if (tablero == null)
         {
             SpawnNormal(joyas[Random.Range(0, joyas.Length)]);

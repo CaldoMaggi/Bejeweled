@@ -15,31 +15,31 @@ public class ReinicioModoClasico : MonoBehaviour
     public void ReiniciarTablero()
     {
         // Guardar potenciadores existentes
-        List<PotenciadorGuardado> potenciadores = new List<PotenciadorGuardado>();
+        List<PotenciadorGuardadoClasico> potenciadores = new List<PotenciadorGuardadoClasico>();
 
-        for (int i = 0; i < tablero.ancho; i++)
-            for (int j = 0; j < tablero.largo; j++)
+        for (int i = 0; i < tablero.Ancho; i++)
+            for (int j = 0; j < tablero.Largo; j++)
             {
                 GeneradorJoyas tile = tablero.allTiles[i, j];
-                if (tile.esBomba || tile.esSupergema)
+                if (tile.EsBomba || tile.EsSupergema)
                 {
-                    potenciadores.Add(new PotenciadorGuardado
+                    potenciadores.Add(new PotenciadorGuardadoClasico
                     {
                         columna = i,
                         fila = j,
-                        esBomba = tile.esBomba,
-                        esSupergema = tile.esSupergema,
+                        esBomba = tile.EsBomba,
+                        esSupergema = tile.EsSupergema,
                         tipo = tile.GetTipo()
                     });
                 }
             }
 
         // Destruir todas las joyas normales
-        for (int i = 0; i < tablero.ancho; i++)
-            for (int j = 0; j < tablero.largo; j++)
+        for (int i = 0; i < tablero.Ancho; i++)
+            for (int j = 0; j < tablero.Largo; j++)
             {
                 GeneradorJoyas tile = tablero.allTiles[i, j];
-                if (!tile.esBomba && !tile.esSupergema && tile.joyaActual != null)
+                if (!tile.EsBomba && !tile.EsSupergema && tile.joyaActual != null)
                 {
                     Object.Destroy(tile.joyaActual);
                     tile.joyaActual = null;
@@ -47,14 +47,14 @@ public class ReinicioModoClasico : MonoBehaviour
             }
 
         // Respawnear joyas normales en los huecos
-        for (int i = 0; i < tablero.ancho; i++)
-            for (int j = 0; j < tablero.largo; j++)
+        for (int i = 0; i < tablero.Ancho; i++)
+            for (int j = 0; j < tablero.Largo; j++)
                 if (tablero.allTiles[i, j].joyaActual == null)
                     tablero.allTiles[i, j].SpawnJoya();
     }
 }
 
-public class PotenciadorGuardado
+public class PotenciadorGuardadoClasico
 {
     public int columna;
     public int fila;

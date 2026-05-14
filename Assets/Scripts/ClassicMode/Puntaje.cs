@@ -21,9 +21,10 @@ public class GestorPuntaje : MonoBehaviour
 
     public GameObject prefabTextoFlotante;
 
-    private void Awake()
+    void Awake()
     {
-        Instancia = this;
+        if (Instancia == null) Instancia = this;
+        else Destroy(gameObject);
     }
 
     private void Start()
@@ -33,11 +34,12 @@ public class GestorPuntaje : MonoBehaviour
 
     public void AgregarPuntos(int puntos)
     {
-        puntaje += puntos * nivelActual; // Suma los puntos obtenidos al puntaje total multiplicado por el nivel actual
+        puntaje += puntos * nivelActual;
         puntaje = Mathf.Min(puntaje, puntajeMax);
         ActualizarUI();
 
-        if (puntaje >= puntajeMax)
+        // Solo gana por puntos en modo clásico, no en contrarreloj
+        if (puntaje >= puntajeMax && GestorContrarreloj.Instancia == null)
         {
             NivelGanado();
         }

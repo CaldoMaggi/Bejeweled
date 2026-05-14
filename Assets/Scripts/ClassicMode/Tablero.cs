@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Tablero : MonoBehaviour
 {
-    public int ancho = 8;
-    public int largo = 8;
+    private int ancho = 8;
+    private int largo = 8;
     public GameObject PrefabTile;
     public GeneradorJoyas[,] allTiles;
+
+    public int Ancho { get => ancho; set => ancho = value; }
+    public int Largo { get => largo; set => largo = value; }
 
     void Start()
     {
@@ -27,9 +30,9 @@ public class Tablero : MonoBehaviour
                 backgroundTile.name = "(" + i + "," + j + ")";
 
                 GeneradorJoyas tile = backgroundTile.GetComponent<GeneradorJoyas>();
-                tile.columnas = i;
-                tile.filas = j;
-                tile.tablero = this;
+                tile.Columnas = i;
+                tile.Filas = j;
+                tile.Tablero = this;
                 allTiles[i, j] = tile;
             }
         }

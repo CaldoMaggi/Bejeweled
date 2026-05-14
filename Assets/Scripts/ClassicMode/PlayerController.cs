@@ -55,8 +55,8 @@ public class PlayerController : MonoBehaviour
         else
         {
             // --- SEGUNDO MOVIMIENTO (DESTINO) ---
-            int dx = Mathf.Abs(tileSeleccionado.columnas - tileClickeado.columnas);
-            int dy = Mathf.Abs(tileSeleccionado.filas - tileClickeado.filas);
+            int dx = Mathf.Abs(tileSeleccionado.Columnas - tileClickeado.Columnas);
+            int dy = Mathf.Abs(tileSeleccionado.Filas - tileClickeado.Filas);
 
             if (dx + dy == 1)
             {
@@ -92,6 +92,8 @@ public class PlayerController : MonoBehaviour
 
     public void EjecutarSwap(GeneradorJoyas a, GeneradorJoyas b)
     {
+        if (a.joyaActual == null || b.joyaActual == null) return; // ← esto es todo
+
         Vector3 posA = a.joyaActual.transform.position;
         Vector3 posB = b.joyaActual.transform.position;
 
@@ -105,11 +107,11 @@ public class PlayerController : MonoBehaviour
         a.joyaActual = b.joyaActual;
         b.joyaActual = temp;
 
-        bool tempBomba = a.esBomba;
-        bool tempSuper = a.esSupergema;
-        a.esBomba = b.esBomba;
-        a.esSupergema = b.esSupergema;
-        b.esBomba = tempBomba;
-        b.esSupergema = tempSuper;
+        bool tempBomba = a.EsBomba;
+        bool tempSuper = a.EsSupergema;
+        a.EsBomba = b.EsBomba;
+        a.EsSupergema = b.EsSupergema;
+        b.EsBomba = tempBomba;
+        b.EsSupergema = tempSuper;
     }
 }
