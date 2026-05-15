@@ -35,14 +35,15 @@ public class GestorPuntaje : MonoBehaviour
     public void AgregarPuntos(int puntos)
     {
         puntaje += puntos * nivelActual;
-        puntaje = Mathf.Min(puntaje, puntajeMax);
+
+        // Solo limita a 500 en modo clásico
+        if (GestorContrarreloj.Instancia == null)
+            puntaje = Mathf.Min(puntaje, puntajeMax);
+
         ActualizarUI();
 
-        // Solo gana por puntos en modo clásico, no en contrarreloj
         if (puntaje >= puntajeMax && GestorContrarreloj.Instancia == null)
-        {
             NivelGanado();
-        }
     }
     public void MostrarTextoFlotante(int puntos, Vector3 posicion)
     {
@@ -56,14 +57,19 @@ public class GestorPuntaje : MonoBehaviour
     {
         if (textoPuntaje != null)
             textoPuntaje.text = $"{puntaje}";
-
         if (barraProgreso != null)
         {
-            // Calcula cuánto se ha progresado RELATIVO al nivel actual
-            float puntosEnEsteNivel = puntaje - puntajeNivelAnterior;
-            float metaEsteNivel = puntajeMax - puntajeNivelAnterior;
-
-            barraProgreso.fillAmount = puntosEnEsteNivel / metaEsteNivel;
+            if (GestorContrarreloj.Instancia != null)
+            {
+                barraProgreso.gameObject.SetActive(false); // oculta la barra en contrarreloj
+            }
+            else
+            {
+                barraProgreso.gameObject.SetActive(true);
+                float puntosEnEsteNivel = puntaje - puntajeNivelAnterior;
+                float metaEsteNivel = puntajeMax - puntajeNivelAnterior;
+                barraProgreso.fillAmount = puntosEnEsteNivel / metaEsteNivel;
+            }
         }
     }
 

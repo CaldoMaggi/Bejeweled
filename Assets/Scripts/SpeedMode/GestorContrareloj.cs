@@ -23,6 +23,10 @@ public class GestorContrarreloj : MonoBehaviour
         if (Instancia == null) Instancia = this;
         else Destroy(gameObject);
     }
+    void OnDestroy()
+    {
+        Instancia = null;
+    }
 
     void Start()
     {

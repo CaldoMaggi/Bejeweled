@@ -27,6 +27,14 @@ public class MenuPausa : MonoBehaviour
         Time.timeScale = 1f;
     }
 
+    public void HomeBotonContrareloj()
+    {
+        ReinicioModoContrareloj.Instancia.ReiniciarPartidaCompleta();
+        Pausado = false;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("PantallaInicio"); // el nombre de tu escena menú
+    }
+
     public void HomeBoton()
     {
         Pausado = false;

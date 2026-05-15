@@ -18,7 +18,7 @@ public class UIContrarreloj : MonoBehaviour
     void Start()
     {
         panelGameOver.SetActive(false);
-        tiempoMaximo = ReinicioModoContrareloj.Instancia.TiempoRestante; // guarda el máximo al inicio
+        tiempoMaximo = ReinicioModoContrareloj.Instancia.TiempoLimite; // ← TiempoLimite, no TiempoRestante
         ReinicioModoContrareloj.Instancia.OnTiempoActualizado += ActualizarBarra;
         ReinicioModoContrareloj.Instancia.OnTiempoActualizado += ActualizarTimer;
         ReinicioModoContrareloj.Instancia.OnBonusTiempo += MostrarPopup;
@@ -27,7 +27,9 @@ public class UIContrarreloj : MonoBehaviour
 
     void OnDestroy()
     {
-        // Siempre desuscribirse para evitar errores al cambiar de escena
+        if (ReinicioModoContrareloj.Instancia == null) return;
+
+        ReinicioModoContrareloj.Instancia.OnTiempoActualizado -= ActualizarBarra;  // ← faltaba esta
         ReinicioModoContrareloj.Instancia.OnTiempoActualizado -= ActualizarTimer;
         ReinicioModoContrareloj.Instancia.OnBonusTiempo -= MostrarPopup;
         ReinicioModoContrareloj.Instancia.OnGameOver -= MostrarPantallaGameOver;

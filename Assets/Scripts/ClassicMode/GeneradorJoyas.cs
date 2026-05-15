@@ -29,6 +29,7 @@ public class GeneradorJoyas : MonoBehaviour
     public void SpawnJoya()
     {
         // ─── Joya de tiempo (solo en modo contrarreloj) ───────────────
+        // Solo spawnea joya de tiempo si GestorContrarreloj está activo en la escena contrareloj
         if (GestorContrarreloj.Instancia != null && GestorContrarreloj.Instancia.DebeSpawnearJoyaTiempo())
         {
             GameObject prefabTiempo = GestorContrarreloj.Instancia.ObtenerPrefabTiempoAleatorio();
