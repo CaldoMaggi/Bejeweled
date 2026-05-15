@@ -978,6 +978,7 @@ RectTransform:
   - {fileID: 1687972132}
   - {fileID: 1334034616}
   - {fileID: 1269541314}
+  - {fileID: 934934342}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1387,7 +1388,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.23900001, y: 0.46300003}
   m_AnchorMax: {x: 0.23900001, y: 0.46300003}
-  m_AnchoredPosition: {x: -10.000061, y: -5.6977005}
+  m_AnchoredPosition: {x: -10.000061, y: 25}
   m_SizeDelta: {x: 158.7854, y: 97.8165}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &738366971
@@ -1412,8 +1413,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.81886786, g: 0.2333001, b: 0.48196155, a: 0.52156866}
+    m_PressedColor: {r: 0.7686275, g: 0.21568629, b: 0.45098042, a: 0.5568628}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1544,8 +1545,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.7660377, g: 0.2066856, b: 0.50481784, a: 0.5686275}
+    m_PressedColor: {r: 0.72156864, g: 0.19607845, b: 0.4784314, a: 0.5411765}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -1722,11 +1723,11 @@ Transform:
   m_GameObject: {fileID: 934934339}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -480, y: -216, z: 0}
+  m_LocalPosition: {x: -345, y: -194, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1334034616}
+  m_Father: {fileID: 443050844}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1004234700
 GameObject:
@@ -1979,7 +1980,6 @@ RectTransform:
   m_Children:
   - {fileID: 1595246077}
   - {fileID: 834061280}
-  - {fileID: 934934342}
   m_Father: {fileID: 443050844}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2258,8 +2258,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_HighlightedColor: {r: 0.7207546, g: 0.16182974, b: 0.44241902, a: 0.5294118}
+    m_PressedColor: {r: 0.69803923, g: 0.15686275, b: 0.427451, a: 0.54509807}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
@@ -2854,6 +2854,7 @@ MonoBehaviour:
   - {fileID: 1975976087200044795, guid: acc9060c4328e6543a292fc89e5d04b0, type: 3}
   - {fileID: 420092387161985294, guid: 8100a48ab02bf2c4e971f3883d8b998b, type: 3}
   - {fileID: 6581891694636616664, guid: 6e338b38d17526e4b907817d5104792e, type: 3}
+  probabilidadJoyaTiempo: 0.08
 --- !u!114 &2059298578
 MonoBehaviour:
   m_ObjectHideFlags: 0

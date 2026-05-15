@@ -8,10 +8,10 @@ public class BotonesInicio : MonoBehaviour
         SceneManager.LoadScene("NivelClasico");
     }
 
-    /*public void JugarTempo()
+    public void JugarTempo()
     {
-        SceneManager.LoadScene("Tempo");
-    }*/
+        SceneManager.LoadScene("NivelContrareloj");
+    }
 
     public void Salir()
     {
