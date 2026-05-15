@@ -17,6 +17,7 @@ public class GestorContrarreloj : MonoBehaviour
 
     private float tiempoRestante;
     private bool activo = false;
+    private bool spawnHabilitado = false;
 
     void Awake()
     {
@@ -39,6 +40,7 @@ public class GestorContrarreloj : MonoBehaviour
 
     public bool DebeSpawnearJoyaTiempo()
     {
+        if (!spawnHabilitado) return false; // ← no spawna hasta que pasen los 15s
         if (prefabsJoyaTiempo == null || prefabsJoyaTiempo.Length == 0) return false;
         return Random.value < probabilidadJoyaTiempo;
     }
@@ -88,6 +90,13 @@ public class GestorContrarreloj : MonoBehaviour
         }
 
         activo = true;
+        StartCoroutine(HabilitarSpawnConDelay());
+    }
+
+    IEnumerator HabilitarSpawnConDelay()
+    {
+        yield return new WaitForSeconds(15f); // 15 segundos antes de que aparezca la primera
+        spawnHabilitado = true;
     }
 
     public void RegistrarMatchConBonus(List<GameObject> joyasDelMatch)
