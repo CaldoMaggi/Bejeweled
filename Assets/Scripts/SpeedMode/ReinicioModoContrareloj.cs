@@ -12,8 +12,7 @@ public class ReinicioModoContrareloj : MonoBehaviour
 
     private float tiempoAcumulado = 0f;
     private bool esNivelCero = true;
-
-    public float intervaloSpawnJoyaTiempo = 8f;
+    private float intervaloSpawnJoyaTiempo = 10f;
 
     public System.Action<float> OnTiempoActualizado;
     public System.Action OnTiempoAgotado;
@@ -70,16 +69,6 @@ public class ReinicioModoContrareloj : MonoBehaviour
         if (esNivelCero)
         {
             tiempoRestante = tiempoLimite;
-        }
-        else
-        {
-            tiempoRestante = ObtenerYVaciarBanco();
-            if (tiempoRestante <= 0f)
-            {
-                OnGameOver?.Invoke();
-                Debug.Log("GAME OVER - No acumulaste tiempo suficiente");
-                return;
-            }
         }
 
         modoActivo = true;
@@ -145,30 +134,67 @@ public class ReinicioModoContrareloj : MonoBehaviour
     private IEnumerator ReiniciarConAnimacion()
     {
         Debug.Log("¡Tiempo agotado! Pasando al siguiente nivel...");
-        yield return new WaitForSeconds(1.5f);
+        modoActivo = false;
+        yield return new WaitForSeconds(1.5f); //tiempo para que el jugador procese el cambio de nivel
 
-        esNivelCero = false;
-        ReiniciarTablero();
-        IniciarContrarreloj();
+        float tiempoGanado = ObtenerYVaciarBanco();
+
+        if (tiempoGanado <= 0f)
+        {
+            OnGameOver?.Invoke();
+            Debug.Log("GAME OVER - No acumulaste tiempo");
+            yield break;
+        }
+
+        yield return StartCoroutine(ReiniciarTableroConAnimacion());
+
+        tiempoRestante = tiempoGanado;
+        modoActivo = true;
+        StartCoroutine(SpawnPeriodico());
+
+        // Reactivar joyas de tiempo con delay para el nuevo nivel
+        if (GestorContrarreloj.Instancia != null)
+            GestorContrarreloj.Instancia.StartCoroutine(
+                GestorContrarreloj.Instancia.HabilitarSpawnConDelay());
     }
 
-    public void ReiniciarTablero()
+    private IEnumerator ReiniciarTableroConAnimacion()
     {
+        // Evitar que spawneen joyas de tiempo durante el refresco
+        if (GestorContrarreloj.Instancia != null)
+            GestorContrarreloj.Instancia.DeshabilitarSpawnTemporalmente();
+
+        // 1. Guardar potenciadores (sin joyas de tiempo)
+        List<PotenciadorGuardadoContrareloj> potenciadores = new List<PotenciadorGuardadoContrareloj>();
+        HashSet<(int, int)> celdasPotenciador = new HashSet<(int, int)>();
+
         for (int i = 0; i < tablero.Ancho; i++)
             for (int j = 0; j < tablero.Largo; j++)
             {
                 GeneradorJoyas tile = tablero.allTiles[i, j];
-                if (!tile.EsBomba && !tile.EsSupergema && tile.joyaActual != null)
+
+                if (tile.joyaActual != null && tile.joyaActual.GetComponent<JoyaTiempo>() != null)
+                    continue;
+
+                if (tile.EsBomba || tile.EsSupergema)
                 {
-                    Object.Destroy(tile.joyaActual);
-                    tile.joyaActual = null;
+                    potenciadores.Add(new PotenciadorGuardadoContrareloj
+                    {
+                        columna = i,
+                        fila = j,
+                        esBomba = tile.EsBomba,
+                        esSupergema = tile.EsSupergema,
+                        tipo = tile.GetTipo()
+                    });
+                    celdasPotenciador.Add((i, j));
                 }
             }
 
-        for (int i = 0; i < tablero.Ancho; i++)
-            for (int j = 0; j < tablero.Largo; j++)
-                if (tablero.allTiles[i, j].joyaActual == null)
-                    tablero.allTiles[i, j].SpawnJoya();
+        // 2. Refrescar — ahora sin riesgo de joyas de tiempo
+        yield return StartCoroutine(tablero.RefrescarTablero(celdasPotenciador));
+
+        // spawnHabilitado queda en false hasta que HabilitarSpawnConDelay lo reactive
+        // en el siguiente IniciarNivel() que llama ReiniciarConAnimacion()
     }
 
     public bool EsNivelCero() => esNivelCero;

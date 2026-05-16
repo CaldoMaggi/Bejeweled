@@ -7,8 +7,7 @@ public class GestorContrarreloj : MonoBehaviour
     public static GestorContrarreloj Instancia;
 
     public Tablero tablero;
-    public float tiempoNivelCero = 60f;
-    public float intervaloSpawnJoyaTiempo = 8f;
+    private float tiempoNivelCero = 60f;
     public GameObject[] prefabsJoyaTiempo;
 
     public System.Action<float> OnTiempoActualizado;
@@ -34,9 +33,7 @@ public class GestorContrarreloj : MonoBehaviour
         IniciarNivel();
     }
 
-    [Header("Probabilidad de joya de tiempo (0 a 1)")]
-    [Range(0f, 1f)]
-    public float probabilidadJoyaTiempo = 0.08f; // 8% de chance por spawn
+    private float probabilidadJoyaTiempo = 0.040f; // 40% de chance por spawn
 
     public bool DebeSpawnearJoyaTiempo()
     {
@@ -93,9 +90,9 @@ public class GestorContrarreloj : MonoBehaviour
         StartCoroutine(HabilitarSpawnConDelay());
     }
 
-    IEnumerator HabilitarSpawnConDelay()
+    public IEnumerator HabilitarSpawnConDelay()
     {
-        yield return new WaitForSeconds(15f); // 15 segundos antes de que aparezca la primera
+        yield return new WaitForSeconds(0.5f); // 0.5 segundos antes de que aparezca la primera joya de tiempo
         spawnHabilitado = true;
     }
 
@@ -116,6 +113,8 @@ public class GestorContrarreloj : MonoBehaviour
             }
         }
     }
+
+    public void DeshabilitarSpawnTemporalmente() => spawnHabilitado = false;
 
     // ─── Game Over ────────────────────────────────────────────────
 

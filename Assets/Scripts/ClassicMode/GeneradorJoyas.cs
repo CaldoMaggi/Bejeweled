@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public enum TipoJoya { Roja, Azul, Verde, Amarilla, Morada, Naranja }
@@ -12,7 +13,7 @@ public class GeneradorJoyas : MonoBehaviour
 
     private int filas;
     private int columnas;
-    public GameObject joyaActual; //Referencia a la joya que se ha generado en esta casilla
+    public GameObject joyaActual;
     private Tablero tablero;
 
     public int Filas { get => filas; set => filas = value; }
@@ -21,31 +22,33 @@ public class GeneradorJoyas : MonoBehaviour
     public bool EsSupergema { get => esSupergema; set => esSupergema = value; }
     public Tablero Tablero { get => tablero; set => tablero = value; }
 
-    private void Start()
+    private void Start() { }
+
+    /// <summary>
+    /// Instancia la gema desplazada 'offsetArriba' unidades sobre la posición actual del tile.
+    /// Si offsetArriba es 0, nace exactamente donde está el tile (que ya fue puesto arriba por Tablero).
+    /// </summary>
+    public void SpawnArriba(float offsetArriba)
     {
-        SpawnJoya();
+        GameObject prefab = ElegirPrefab();
+        if (prefab == null) return;
+
+        Vector3 posicionSpawn = transform.position + Vector3.up * offsetArriba;
+        joyaActual = Instantiate(prefab, posicionSpawn, Quaternion.identity);
+        joyaActual.transform.parent = this.transform;
+        joyaActual.name = this.gameObject.name;
     }
 
-    public void SpawnJoya()
+    private GameObject ElegirPrefab()
     {
-        // ─── Joya de tiempo (solo en modo contrarreloj) ───────────────
-        // Solo spawnea joya de tiempo si GestorContrarreloj está activo en la escena contrareloj
         if (GestorContrarreloj.Instancia != null && GestorContrarreloj.Instancia.DebeSpawnearJoyaTiempo())
         {
             GameObject prefabTiempo = GestorContrarreloj.Instancia.ObtenerPrefabTiempoAleatorio();
-            if (prefabTiempo != null)
-            {
-                SpawnNormal(prefabTiempo);
-                return;
-            }
+            if (prefabTiempo != null) return prefabTiempo;
         }
 
-        // ─── Lógica normal (clasico y contrarreloj sin bonus) ─────────
         if (tablero == null)
-        {
-            SpawnNormal(joyas[Random.Range(0, joyas.Length)]);
-            return;
-        }
+            return joyas[Random.Range(0, joyas.Length)];
 
         List<GameObject> disponibles = new List<GameObject>(joyas);
         disponibles = Shuffle(disponibles);
@@ -63,13 +66,16 @@ public class GeneradorJoyas : MonoBehaviour
                 tablero.allTiles[columnas, filas - 2].GetTipo() == tipoIntento;
 
             if (!matchHorizontal && !matchVertical)
-            {
-                SpawnNormal(prefabJoya);
-                return;
-            }
+                return prefabJoya;
         }
 
-        SpawnNormal(joyas[0]);
+        return joyas[0];
+    }
+
+    public void SpawnJoya()
+    {
+        GameObject prefab = ElegirPrefab();
+        if (prefab != null) SpawnNormal(prefab);
     }
 
     private void SpawnNormal(GameObject prefab)
@@ -77,6 +83,53 @@ public class GeneradorJoyas : MonoBehaviour
         joyaActual = Instantiate(prefab, transform.position, Quaternion.identity);
         joyaActual.transform.parent = this.transform;
         joyaActual.name = this.gameObject.name;
+    }
+
+    // ─── ANIMACIÓN DE CAÍDA ───────────────────────────────────────────────────
+    public IEnumerator AnimarCaida(float duracion, float delay = 0f)
+    {
+        if (joyaActual == null) yield break;
+
+        if (delay > 0f)
+            yield return new WaitForSeconds(delay);
+
+        // La posición local destino es (0,0,0) porque la gema debe quedar
+        // centrada en su tile padre
+        Vector3 inicioLocal = joyaActual.transform.localPosition;
+        Vector3 destinoLocal = Vector3.zero;
+
+        // Si ya está en origen, no hay nada que animar
+        if (inicioLocal == destinoLocal) yield break;
+
+        float tiempo = 0f;
+        while (tiempo < duracion)
+        {
+            tiempo += Time.deltaTime;
+            float t = Mathf.Clamp01(tiempo / duracion);
+            joyaActual.transform.localPosition = Vector3.LerpUnclamped(inicioLocal, destinoLocal, EaseOutBounce(t));
+            yield return null;
+        }
+
+        joyaActual.transform.localPosition = destinoLocal;
+    }
+
+    // Exactamente 2 rebotes: uno grande (~25% de altura) y uno pequeño (~6%)
+    private float EaseOutBounce(float t)
+    {
+        if (t < 0.6364f)
+        {
+            return 6.0742f * t * t;                         // caída principal
+        }
+        else if (t < 0.8727f)
+        {
+            t -= 0.7545f;
+            return 6.0742f * t * t + 0.75f;                // primer rebote
+        }
+        else
+        {
+            t -= 0.9636f;
+            return 6.0742f * t * t + 0.9375f;              // segundo rebote pequeño
+        }
     }
 
     public TipoJoya GetTipo()
