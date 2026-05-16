@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 38ee56f6d76655048b8087d276c91b98
+guid: 882e72a6ee6e0a245988665e02e365d7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5727891299187845929
-    second: TileBackground_0
+      213: -129504879170155860
+    second: JoyaRojaSprite-01_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TileBackground_0
+      name: JoyaRojaSprite-01_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 19
         width: 512
-        height: 512
+        height: 427
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7d49bd706317280b0800000000000000
-      internalID: -5727891299187845929
+      spriteID: caa0260aff7e33ef0800000000000000
+      internalID: -129504879170155860
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      TileBackground_0: -5727891299187845929
+      JoyaRojaSprite-01_0: -129504879170155860
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
