@@ -33,7 +33,7 @@ public class GestorContrarreloj : MonoBehaviour
         IniciarNivel();
     }
 
-    private float probabilidadJoyaTiempo = 0.040f; // 40% de chance por spawn
+    private float probabilidadJoyaTiempo = 0.10f; // 10% de chance pora la joya de tiempo
 
     public bool DebeSpawnearJoyaTiempo()
     {
