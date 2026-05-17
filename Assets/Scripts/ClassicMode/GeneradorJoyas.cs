@@ -21,13 +21,6 @@ public class GeneradorJoyas : MonoBehaviour
     public bool EsBomba { get => esBomba; set => esBomba = value; }
     public bool EsSupergema { get => esSupergema; set => esSupergema = value; }
     public Tablero Tablero { get => tablero; set => tablero = value; }
-
-    private void Start() { }
-
-    /// <summary>
-    /// Instancia la gema desplazada 'offsetArriba' unidades sobre la posición actual del tile.
-    /// Si offsetArriba es 0, nace exactamente donde está el tile (que ya fue puesto arriba por Tablero).
-    /// </summary>
     public void SpawnArriba(float offsetArriba)
     {
         GameObject prefab = ElegirPrefab();
@@ -93,8 +86,7 @@ public class GeneradorJoyas : MonoBehaviour
         if (delay > 0f)
             yield return new WaitForSeconds(delay);
 
-        // La posición local destino es (0,0,0) porque la gema debe quedar
-        // centrada en su tile padre
+        // La posición local destino es (0,0,0) porque la gema debe quedar centrada en su tile padre
         Vector3 inicioLocal = joyaActual.transform.localPosition;
         Vector3 destinoLocal = Vector3.zero;
 
@@ -111,6 +103,9 @@ public class GeneradorJoyas : MonoBehaviour
         }
 
         joyaActual.transform.localPosition = destinoLocal;
+        if (SoundManager.Instancia != null)
+            Debug.Log("✅ AnimarCaida terminó en: " + gameObject.name);
+        SoundManager.Instancia.ReproducirCaida();
     }
 
     // Exactamente 2 rebotes: uno grande (~25% de altura) y uno pequeño (~6%)

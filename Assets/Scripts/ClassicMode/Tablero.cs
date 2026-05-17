@@ -53,7 +53,6 @@ public class Tablero : MonoBehaviour
     private IEnumerator AnimarCaidaTablero()
     {
         yield return null;
-        yield return null;
 
         for (int i = 0; i < ancho; i++)
         {
@@ -62,15 +61,24 @@ public class Tablero : MonoBehaviour
                 GeneradorJoyas tile = allTiles[i, j];
                 float delay = i * delayPorColumna;
 
-                // Animar el tile (fondo de casilla)
                 Vector3 destino = new Vector3(i, j, tile.transform.position.z);
                 StartCoroutine(AnimarObjeto(tile.gameObject, destino, duracionCaida, delay));
 
-                // Animar la gema encima
                 if (tile.joyaActual != null)
+                {
                     StartCoroutine(tile.AnimarCaida(duracionCaida, delay));
+                    // ← sonido al aterrizar, una vez por columna
+                    StartCoroutine(ReproducirSonidoAlAterizar(delay + duracionCaida));
+                }
             }
         }
+    }
+
+    private IEnumerator ReproducirSonidoAlAterizar(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (SoundManager.Instancia != null)
+            SoundManager.Instancia.ReproducirCaida();
     }
 
     // Corrutina genérica que baja cualquier GameObject a su destino con EaseOutBounce

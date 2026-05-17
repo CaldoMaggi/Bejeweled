@@ -108,6 +108,8 @@ public class DetectorMatch : MonoBehaviour
                 GestorPuntaje.Instancia.puntosMatch4,
                 centro.transform.position
             );
+            if (SoundManager.Instancia != null)
+                SoundManager.Instancia.ReproducirMatch4();
         }
         else
         {
@@ -117,6 +119,8 @@ public class DetectorMatch : MonoBehaviour
                 : GestorPuntaje.Instancia.puntosMatch3Cascada;
             GestorPuntaje.Instancia.AgregarPuntos(pts);
             GestorPuntaje.Instancia.MostrarTextoFlotante(pts, CentroDelMatch(todos));
+            if (SoundManager.Instancia != null)
+                SoundManager.Instancia.ReproducirMatch3();
         }
 
         esMovimientoManual = false;
@@ -208,6 +212,8 @@ public class DetectorMatch : MonoBehaviour
                     CentroDelMatch(todosLosMatches)
                 );
             }
+            if (SoundManager.Instancia != null)
+                SoundManager.Instancia.ReproducirMatch3();
 
             yield return new WaitForSeconds(0.3f);
             RellenarTablero();
@@ -250,6 +256,8 @@ public class DetectorMatch : MonoBehaviour
         if (eraBomba)
         {
             GestorPuntaje.Instancia.AgregarPuntos(GestorPuntaje.Instancia.puntosBomba);
+            if (SoundManager.Instancia != null)
+                SoundManager.Instancia.ReproducirBomba();
             ExplotarArea(tile);
         }
     }
@@ -341,6 +349,10 @@ public class DetectorMatch : MonoBehaviour
         bombaObj.GetComponent<Bomba>().tipo = tipoAnterior;
         tile.joyaActual = bombaObj;
         tile.EsBomba = true;
+
+        // ← sonido al crear
+        if (SoundManager.Instancia != null)
+            SoundManager.Instancia.ReproducirSpawnBomba();
     }
 
     private void ConvertirEnSupergema(GeneradorJoyas tile)
@@ -355,6 +367,9 @@ public class DetectorMatch : MonoBehaviour
         GameObject superObj = Instantiate(tile.superGema, tile.transform.position, Quaternion.identity, tile.transform);
         tile.joyaActual = superObj;
         tile.EsSupergema = true;
+
+        if (SoundManager.Instancia != null)
+            SoundManager.Instancia.ReproducirSupergema();
     }
 
     private TipoJoya ObtenerTipo(GeneradorJoyas tile)
@@ -399,5 +414,9 @@ public class DetectorMatch : MonoBehaviour
             for (int j = 0; j < tablero.Largo; j++)
                 if (tablero.allTiles[i, j].joyaActual == null)
                     tablero.allTiles[i, j].SpawnJoya();
+
+        // ← sonido al rellenar
+        if (SoundManager.Instancia != null)
+            SoundManager.Instancia.ReproducirCaida();
     }
 }
