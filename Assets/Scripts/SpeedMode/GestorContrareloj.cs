@@ -17,12 +17,14 @@ public class GestorContrarreloj : MonoBehaviour
     private float tiempoRestante;
     private bool activo = false;
     private bool spawnHabilitado = false;
+    private float probabilidadJoyaTiempo = 0.10f;
 
     void Awake()
     {
         if (Instancia == null) Instancia = this;
         else Destroy(gameObject);
     }
+
     void OnDestroy()
     {
         Instancia = null;
@@ -33,11 +35,9 @@ public class GestorContrarreloj : MonoBehaviour
         IniciarNivel();
     }
 
-    private float probabilidadJoyaTiempo = 0.10f; // 10% de chance pora la joya de tiempo
-
     public bool DebeSpawnearJoyaTiempo()
     {
-        if (!spawnHabilitado) return false; // ← no spawna hasta que pasen los 15s
+        if (!spawnHabilitado) return false;
         if (prefabsJoyaTiempo == null || prefabsJoyaTiempo.Length == 0) return false;
         return Random.value < probabilidadJoyaTiempo;
     }
@@ -47,6 +47,7 @@ public class GestorContrarreloj : MonoBehaviour
         if (prefabsJoyaTiempo == null || prefabsJoyaTiempo.Length == 0) return null;
         return prefabsJoyaTiempo[Random.Range(0, prefabsJoyaTiempo.Length)];
     }
+
     void Update()
     {
         if (!activo) return;
@@ -92,7 +93,7 @@ public class GestorContrarreloj : MonoBehaviour
 
     public IEnumerator HabilitarSpawnConDelay()
     {
-        yield return new WaitForSeconds(0.5f); // 0.5 segundos antes de que aparezca la primera joya de tiempo
+        yield return new WaitForSeconds(0.5f);
         spawnHabilitado = true;
     }
 
@@ -104,19 +105,16 @@ public class GestorContrarreloj : MonoBehaviour
             JoyaTiempo bonus = joya.GetComponent<JoyaTiempo>();
             if (bonus != null)
             {
-                Vector3 pos = joya.transform.position; // posición real de la joya
+                Vector3 pos = joya.transform.position;
                 float segundos = bonus.ObtenerBonus();
                 ReinicioModoContrareloj.Instancia.TiempoAcumulado += segundos;
                 OnBonusTiempo?.Invoke(segundos);
-                GestorPuntaje.Instancia.MostrarTextoFlotante((int)segundos, pos); // ← posición correcta
-                Debug.Log($"+{segundos}s en posición {pos}");
+                GestorPuntaje.Instancia.MostrarTextoFlotante((int)segundos, pos);
             }
         }
     }
 
     public void DeshabilitarSpawnTemporalmente() => spawnHabilitado = false;
-
-    // ─── Game Over ────────────────────────────────────────────────
 
     void TriggerGameOver()
     {

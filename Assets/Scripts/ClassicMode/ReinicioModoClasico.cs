@@ -64,6 +64,7 @@ public class ReinicioModoClasico : MonoBehaviour
     }
 
 
+
     public class PotenciadorGuardadoClasico
     {
         public int columna;

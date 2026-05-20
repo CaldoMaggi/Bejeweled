@@ -17,7 +17,6 @@ public class GestorPuntaje : MonoBehaviour
     private int puntajeMax = 500;
 
     private int puntaje = 0;
-    private int nivelActual = 1;
 
     public GameObject prefabTextoFlotante;
 
@@ -34,7 +33,7 @@ public class GestorPuntaje : MonoBehaviour
 
     public void AgregarPuntos(int puntos)
     {
-        puntaje += puntos * nivelActual;
+        puntaje += puntos;
 
         // Solo limita a 500 en modo clásico
         if (GestorContrarreloj.Instancia == null)
@@ -48,7 +47,7 @@ public class GestorPuntaje : MonoBehaviour
     public void MostrarTextoFlotante(int puntos, Vector3 posicion)
     {
         GameObject obj = Instantiate(prefabTextoFlotante, posicion, Quaternion.identity);
-        obj.GetComponent<ValoresMatchTexto>().Iniciar(puntos * nivelActual, posicion);
+        obj.GetComponent<ValoresMatchTexto>().Iniciar(puntos, posicion);
     }
 
     private int puntajeNivelAnterior = 0; // Puntos con los que empezaste el nivel actual
@@ -76,7 +75,6 @@ public class GestorPuntaje : MonoBehaviour
     private void NivelGanado()
     {
         Debug.Log("¡Nivel ganado!");
-        nivelActual++;
 
         // Antes de subir la meta, se guarda el puntaje actual como base
         puntajeNivelAnterior = puntaje;

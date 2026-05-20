@@ -198,7 +198,6 @@ public class ReinicioModoContrareloj : MonoBehaviour
     }
 
     public bool EsNivelCero() => esNivelCero;
-    public void MarcarNivelSiguiente() => esNivelCero = false;
 }
 
 public class PotenciadorGuardadoContrareloj
